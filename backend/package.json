@@ -6,9 +6,13 @@
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test:sentiment": "tsx src/test-sentiment.ts",
+    "check:cache": "tsx src/check-cache.ts",
+    "clear:cache": "tsx src/clear-cache.ts"
   },
   "dependencies": {
+    "@xenova/transformers": "^2.17.2",
     "express": "^4.21.1"
   },
   "devDependencies": {
