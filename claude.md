@@ -65,7 +65,6 @@ HappyMeter is a customer feedback system with sentiment analysis designed as a P
 ### Customer Feedback
 
 - **POST /api/feedback**
-
   - Submit customer feedback (max 1000 characters)
   - Returns sentiment analysis result (Good/Bad/Neutral)
   - Stores feedback and sentiment in database

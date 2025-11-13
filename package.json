@@ -1,12 +1,21 @@
 {
   "name": "happymeter",
   "version": "1.0.0",
-  "main": "index.js",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
   "scripts": {
+    "format:check": "prettier --check .",
+    "format:write": "prettier --write .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "Tamas Besenyei",
   "license": "ISC",
-  "description": ""
+  "description": "Customer feedback system with sentiment analysis",
+  "devDependencies": {
+    "prettier": "^3.3.3"
+  }
 }
