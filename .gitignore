@@ -37,3 +37,8 @@ coverage/
 .cache
 .temp
 tmp/
+
+# SSL certificates (generate locally)
+nginx/certs/*.crt
+nginx/certs/*.key
+nginx/certs/*.pem
