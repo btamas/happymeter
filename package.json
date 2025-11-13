@@ -2,6 +2,7 @@
   "name": "happymeter",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "workspaces": [
     "frontend",
     "backend"
@@ -9,6 +10,8 @@
   "scripts": {
     "format:check": "prettier --check .",
     "format:write": "prettier --write .",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -16,6 +19,9 @@
   "license": "ISC",
   "description": "Customer feedback system with sentiment analysis",
   "devDependencies": {
-    "prettier": "^3.3.3"
+    "@eslint/js": "^9.15.0",
+    "eslint": "^9.15.0",
+    "prettier": "^3.3.3",
+    "typescript-eslint": "^8.14.0"
   }
 }
