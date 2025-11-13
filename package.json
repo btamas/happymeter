@@ -8,10 +8,17 @@
     "backend"
   ],
   "scripts": {
+    "dev:backend": "npm run dev -w backend",
+    "dev:frontend": "npm run dev -w frontend",
+    "build": "npm run build -w backend && npm run build -w frontend",
+    "build:backend": "npm run build -w backend",
+    "build:frontend": "npm run build -w frontend",
+    "start:prod": "docker-compose up --build",
+    "stop:prod": "docker-compose down",
     "format:check": "prettier --check .",
     "format:write": "prettier --write .",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
+    "lint": "npm run lint -w backend && npm run lint -w frontend",
+    "lint:fix": "npm run lint -w backend -- --fix && npm run lint -w frontend -- --fix",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
