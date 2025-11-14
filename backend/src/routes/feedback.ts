@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express';
 import { db } from '../db/index.js';
 import { feedback } from '../db/schema.js';
 import { analyzeSentiment } from '../services/sentiment.js';
-import { desc } from 'drizzle-orm';
+import { desc, eq, sql } from 'drizzle-orm';
 
 const router = Router();
 
@@ -127,6 +127,25 @@ router.post('/feedback', async (req: Request, res: Response) => {
  *       - Feedback
  *     summary: Retrieve all feedback
  *     description: Get all submitted feedback with sentiment analysis results, ordered by most recent first
+ *     parameters:
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 20
+ *         description: Number of records to return
+ *       - in: query
+ *         name: offset
+ *         schema:
+ *           type: integer
+ *           default: 0
+ *         description: Number of records to skip
+ *       - in: query
+ *         name: sentiment
+ *         schema:
+ *           type: string
+ *           enum: [GOOD, BAD, NEUTRAL]
+ *         description: Filter by sentiment
  *     responses:
  *       200:
  *         description: List of all feedback
@@ -163,17 +182,42 @@ router.post('/feedback', async (req: Request, res: Response) => {
  *                         example: 2025-11-14T12:00:00.000Z
  *                 total:
  *                   type: integer
- *                   example: 1
+ *                   example: 150
+ *                 limit:
+ *                   type: integer
+ *                   example: 20
+ *                 offset:
+ *                   type: integer
+ *                   example: 0
  *       500:
  *         description: Internal server error
  */
-router.get('/feedback', async (_req: Request, res: Response) => {
+router.get('/feedback', async (req: Request, res: Response) => {
   try {
-    const allFeedback = await db.select().from(feedback).orderBy(desc(feedback.createdAt));
+    const limit = Math.max(1, Math.min(100, parseInt(req.query.limit as string) || 20));
+    const offset = Math.max(0, parseInt(req.query.offset as string) || 0);
+    const sentimentFilter = req.query.sentiment as string | undefined;
+
+    let query = db.select().from(feedback).$dynamic();
+
+    if (sentimentFilter && ['GOOD', 'BAD', 'NEUTRAL'].includes(sentimentFilter)) {
+      query = query.where(eq(feedback.sentiment, sentimentFilter as 'GOOD' | 'BAD' | 'NEUTRAL'));
+    }
+
+    const [feedbackList, countResult] = await Promise.all([
+      query.orderBy(desc(feedback.createdAt)).limit(limit).offset(offset),
+      sentimentFilter && ['GOOD', 'BAD', 'NEUTRAL'].includes(sentimentFilter)
+        ? db.select({ count: sql<number>`count(*)::int` }).from(feedback).where(eq(feedback.sentiment, sentimentFilter as 'GOOD' | 'BAD' | 'NEUTRAL'))
+        : db.select({ count: sql<number>`count(*)::int` }).from(feedback)
+    ]);
+
+    const total = countResult[0]?.count || 0;
 
     res.json({
-      feedback: allFeedback,
-      total: allFeedback.length
+      feedback: feedbackList,
+      total,
+      limit,
+      offset
     });
   } catch (error) {
     console.error('Feedback retrieval error:', error);
