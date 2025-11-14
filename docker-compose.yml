@@ -18,5 +18,22 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=4000
+      - DATABASE_URL=postgresql://happymeter:happymeter@db:5432/happymeter
     expose:
       - '4000'
+    depends_on:
+      - db
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_USER=happymeter
+      - POSTGRES_PASSWORD=happymeter
+      - POSTGRES_DB=happymeter
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
