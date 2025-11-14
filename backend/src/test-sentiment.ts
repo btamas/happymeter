@@ -14,7 +14,7 @@ const testSamples = [
   'Terrible experience, completely disappointed.',
   'It works as expected, nothing special.',
   'I love this! Highly recommend to everyone.',
-  'Worst product I\'ve ever bought. Save your money.',
+  "Worst product I've ever bought. Save your money.",
   'Pretty decent, meets basic requirements.',
   'ok'
 ];
@@ -54,10 +54,14 @@ async function main() {
 
 function getLabelEmoji(label: string): string {
   switch (label) {
-    case 'Good': return '😊';
-    case 'Bad': return '😞';
-    case 'Neutral': return '😐';
-    default: return '❓';
+    case 'Good':
+      return '😊';
+    case 'Bad':
+      return '😞';
+    case 'Neutral':
+      return '😐';
+    default:
+      return '❓';
   }
 }
 

@@ -8,6 +8,6 @@ export default defineConfig({
   out: './drizzle',
   dialect: 'postgresql',
   dbCredentials: {
-    url: process.env.DATABASE_URL || 'postgresql://happymeter:happymeter@localhost:5432/happymeter',
-  },
+    url: process.env.DATABASE_URL || 'postgresql://happymeter:happymeter@localhost:5432/happymeter'
+  }
 });

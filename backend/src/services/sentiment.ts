@@ -17,21 +17,21 @@ function getClassifier() {
 export type SentimentLabel = 'Good' | 'Neutral' | 'Bad';
 
 export async function analyzeSentiment(text: string): Promise<{
-  score: number;                // signed integer, ~[-10..10]
-  label: SentimentLabel;        // Good | Neutral | Bad
-  probs: Record<string, number>;// raw class probs for debugging
+  score: number; // signed integer, ~[-10..10]
+  label: SentimentLabel; // Good | Neutral | Bad
+  probs: Record<string, number>; // raw class probs for debugging
 }> {
   const classifier = await getClassifier();
 
   // Ask for all classes so we can compute a signed score
-  const result = await classifier(text, { topk: 3 }) as Array<{ label: string; score: number }>;
+  const result = (await classifier(text, { topk: 3 })) as Array<{ label: string; score: number }>;
   // result is an array like: [{label:'positive', score:0.82}, {label:'neutral',...}, {label:'negative',...}]
   const probs: Record<string, number> = {};
   for (const r of result) probs[r.label.toLowerCase()] = r.score;
 
   const pos = probs['positive'] ?? 0;
   const neg = probs['negative'] ?? 0;
-  const neu = probs['neutral']  ?? 0;
+  const neu = probs['neutral'] ?? 0;
 
   // Primary label = argmax
   let primary = 'neutral';
@@ -39,9 +39,7 @@ export async function analyzeSentiment(text: string): Promise<{
   else if (neg >= pos && neg >= neu) primary = 'negative';
 
   // Map to your domain labels
-  const label: SentimentLabel =
-    primary === 'positive' ? 'Good' :
-    primary === 'negative' ? 'Bad' : 'Neutral';
+  const label: SentimentLabel = primary === 'positive' ? 'Good' : primary === 'negative' ? 'Bad' : 'Neutral';
 
   // Signed score: positive confidence minus negative confidence, scaled to int
   const score = Math.round((pos - neg) * 10); // ~[-10..10]

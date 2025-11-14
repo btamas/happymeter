@@ -1,27 +1,27 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react';
 
 interface HealthResponse {
-  status: string
-  timestamp: string
+  status: string;
+  timestamp: string;
 }
 
 function App() {
-  const [health, setHealth] = useState<HealthResponse | null>(null)
-  const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [health, setHealth] = useState<HealthResponse | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch('/api/health')
       .then(res => res.json())
       .then(data => {
-        setHealth(data)
-        setLoading(false)
+        setHealth(data);
+        setLoading(false);
       })
       .catch(err => {
-        setError(err.message)
-        setLoading(false)
-      })
-  }, [])
+        setError(err.message);
+        setLoading(false);
+      });
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
@@ -40,7 +40,7 @@ function App() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
