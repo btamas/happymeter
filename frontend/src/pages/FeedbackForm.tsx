@@ -6,7 +6,7 @@ export default function FeedbackForm() {
   const [text, setText] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<{ sentiment: Sentiment; confidence: string } | null>(null);
+  const [success, setSuccess] = useState<Sentiment | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -16,10 +16,7 @@ export default function FeedbackForm() {
 
     try {
       const result = await submitFeedback({ text });
-      setSuccess({
-        sentiment: result.sentiment,
-        confidence: result.confidenceScore
-      });
+      setSuccess(result.sentiment);
       setText('');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to submit feedback');
@@ -28,14 +25,32 @@ export default function FeedbackForm() {
     }
   };
 
-  const getSentimentColor = (sentiment: Sentiment) => {
+  const getSentimentMessage = (sentiment: Sentiment) => {
     switch (sentiment) {
       case 'GOOD':
-        return 'text-green-600';
+        return {
+          title: 'Thank you for your positive feedback!',
+          message: 'We\'re delighted to hear you had a great experience. We\'ll continue working hard to maintain the quality you expect from us.',
+          bgColor: 'bg-green-50',
+          borderColor: 'border-green-200',
+          textColor: 'text-green-800'
+        };
       case 'BAD':
-        return 'text-red-600';
+        return {
+          title: 'We sincerely apologize',
+          message: 'We\'re sorry to hear about the issues you\'ve experienced. Your feedback is important to us, and we will take it seriously to investigate and address your concerns.',
+          bgColor: 'bg-red-50',
+          borderColor: 'border-red-200',
+          textColor: 'text-red-800'
+        };
       case 'NEUTRAL':
-        return 'text-yellow-600';
+        return {
+          title: 'Thank you for your feedback!',
+          message: 'We appreciate you taking the time to share your thoughts. We\'re continuously working to improve our service and deliver a better experience.',
+          bgColor: 'bg-blue-50',
+          borderColor: 'border-blue-200',
+          textColor: 'text-blue-800'
+        };
     }
   };
 
@@ -75,11 +90,12 @@ export default function FeedbackForm() {
             )}
 
             {success && (
-              <div className="bg-green-50 border border-green-200 px-4 py-3 rounded-lg">
-                <p className="text-green-800 font-medium mb-1">Thank you for your feedback!</p>
-                <p className="text-sm text-green-700">
-                  Sentiment: <span className={getSentimentColor(success.sentiment)}>{success.sentiment}</span>
-                  {' '}(Confidence: {(parseFloat(success.confidence) * 100).toFixed(1)}%)
+              <div className={`${getSentimentMessage(success).bgColor} border ${getSentimentMessage(success).borderColor} px-4 py-3 rounded-lg`}>
+                <p className={`${getSentimentMessage(success).textColor} font-semibold mb-2`}>
+                  {getSentimentMessage(success).title}
+                </p>
+                <p className={`text-sm ${getSentimentMessage(success).textColor}`}>
+                  {getSentimentMessage(success).message}
                 </p>
               </div>
             )}
