@@ -259,15 +259,7 @@ Frontend will start at http://localhost:5173
 
 For a production-like environment with nginx reverse proxy and SSL:
 
-#### 1. Build Frontend
-
-```bash
-npm run build:frontend
-```
-
-This creates the production build in `frontend/dist/`.
-
-#### 2. Generate SSL Certificates (for local HTTPS testing)
+#### 1. Generate SSL Certificates (for local HTTPS testing)
 
 ```bash
 mkdir -p nginx/certs
@@ -281,7 +273,7 @@ openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
 cd ../..
 ```
 
-#### 3. Start All Services with Docker Compose
+#### 2. Start All Services with Docker Compose
 
 ```bash
 docker-compose up --build
@@ -293,22 +285,29 @@ Or use the npm script:
 npm run start:prod
 ```
 
+**What happens during startup:**
+1. **frontend-builder** service builds the React app and outputs to `frontend/dist/`
+2. **backend** service builds and starts the Express API
+3. **db** service starts PostgreSQL database
+4. **nginx** serves the built frontend and proxies API requests to backend
+
 This starts:
+- Frontend Builder (builds once, then exits)
 - PostgreSQL database (port 5432)
-- Backend API (internal port 8080)
-- Nginx reverse proxy (ports 80, 443)
+- Backend API (internal port 4000)
+- Nginx reverse proxy (ports 8080 for HTTP, 8443 for HTTPS)
 
-#### 4. Access the Application
+#### 3. Access the Application
 
-- **HTTPS**: https://localhost/
-- **HTTP**: http://localhost/ (redirects to HTTPS)
-- **Admin Dashboard**: https://localhost/admin
-- **API**: https://localhost/api/feedback
-- **API Docs**: https://localhost/api-docs
+- **HTTPS**: https://localhost:8443/
+- **HTTP**: http://localhost:8080/ (redirects to HTTPS)
+- **Admin Dashboard**: https://localhost:8443/admin
+- **API**: https://localhost:8443/api/feedback
+- **API Docs**: https://localhost:8443/api-docs
 
 **Note**: Your browser will show a security warning for the self-signed certificate. Click "Advanced" and proceed.
 
-#### 5. Stop Services
+#### 4. Stop Services
 
 ```bash
 docker-compose down
@@ -319,6 +318,27 @@ Or use the npm script:
 ```bash
 npm run stop:prod
 ```
+
+### Alternative: Manual Production Build
+
+If you prefer to build manually before running Docker:
+
+```bash
+# Option 1: Use the build script
+./build-production.sh
+
+# Option 2: Build manually
+npm run build:frontend   # Creates frontend/dist/
+npm run build:backend    # Creates backend/dist/
+
+# Then start Docker (skips the frontend-builder service)
+docker-compose up -d
+```
+
+This approach is useful if:
+- You want to inspect the build output before deployment
+- You're deploying to a different environment
+- You want faster Docker startup (no build step)
 
 ## API Documentation
 
@@ -491,6 +511,67 @@ happymeter/
     └── certs/                  # SSL certificates (generated)
 ```
 
+## Frontend Build Process
+
+### Development Mode
+
+In development, Vite serves the frontend with hot module replacement:
+
+```bash
+npm run dev:frontend
+# Frontend runs at http://localhost:5173
+# API calls proxied to http://localhost:4000/api
+```
+
+### Production Build
+
+The frontend build process compiles TypeScript, bundles with Vite, and outputs optimized static files:
+
+```bash
+cd frontend
+npm run build
+```
+
+**Build output:**
+- Location: `frontend/dist/`
+- Contents: `index.html`, JavaScript bundles, CSS, assets
+- Optimizations: Minification, tree-shaking, code splitting
+
+**Build steps:**
+1. TypeScript compilation (`tsc -b`)
+2. Vite build (bundling, optimization)
+3. Output to `dist/` directory
+
+### Verifying the Build
+
+Preview the production build locally:
+
+```bash
+cd frontend
+npm run preview
+# Serves dist/ at http://localhost:4173
+```
+
+### Docker Build Integration
+
+Docker Compose includes a `frontend-builder` service that:
+1. Installs npm dependencies in a Node.js container
+2. Runs `npm run build`
+3. Copies `dist/` contents to the host filesystem
+4. Nginx then serves the built files
+
+**Manual build before Docker:**
+```bash
+npm run build:frontend
+docker-compose up nginx backend db
+```
+
+**Automatic build with Docker:**
+```bash
+docker-compose up --build
+```
+The `frontend-builder` service runs automatically and exits after building.
+
 ## Development Commands
 
 ### Root Commands
@@ -500,13 +581,21 @@ npm run dev:backend          # Start backend dev server (port 4000)
 npm run dev:frontend         # Start frontend dev server (port 5173)
 npm run build                # Build both frontend and backend
 npm run build:backend        # Build backend only
-npm run build:frontend       # Build frontend only
-npm run start:prod           # Start with Docker Compose
+npm run build:frontend       # Build frontend only (outputs to frontend/dist/)
+npm run start:prod           # Start with Docker Compose (auto-builds frontend)
 npm run stop:prod            # Stop Docker Compose
 npm run lint                 # Lint both frontend and backend
 npm run lint:fix             # Auto-fix linting issues
 npm run format:check         # Check code formatting
 npm run format:write         # Auto-format code
+```
+
+### Build Script
+
+For convenience, use the provided build script:
+
+```bash
+./build-production.sh        # Builds both frontend and backend, shows output paths
 ```
 
 ### Backend Commands

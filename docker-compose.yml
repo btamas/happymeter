@@ -1,4 +1,12 @@
 services:
+  frontend-builder:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.build
+    volumes:
+      - ./frontend/dist:/app/dist-output
+    command: sh -c "cp -r /app/dist/* /app/dist-output/ && echo 'Frontend build completed'"
+
   nginx:
     image: nginx:alpine
     ports:
@@ -9,7 +17,10 @@ services:
       - ./nginx/certs:/etc/nginx/certs:ro
       - ./frontend/dist:/usr/share/nginx/html:ro
     depends_on:
-      - backend
+      frontend-builder:
+        condition: service_completed_successfully
+      backend:
+        condition: service_started
 
   backend:
     build:
