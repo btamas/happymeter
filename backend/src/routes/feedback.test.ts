@@ -6,12 +6,12 @@ import { pool } from '../db/index.js';
 vi.mock('../services/sentiment.js', () => ({
   analyzeSentiment: vi.fn(async (text: string) => {
     if (text.toLowerCase().includes('amazing') || text.toLowerCase().includes('great')) {
-      return { label: 'Good', score: 8, probs: { positive: 0.9, negative: 0.05, neutral: 0.05 } };
+      return { label: 'GOOD', score: 8, probs: { positive: 0.9, negative: 0.05, neutral: 0.05 } };
     }
     if (text.toLowerCase().includes('terrible') || text.toLowerCase().includes('awful')) {
-      return { label: 'Bad', score: -8, probs: { positive: 0.05, negative: 0.9, neutral: 0.05 } };
+      return { label: 'BAD', score: -8, probs: { positive: 0.05, negative: 0.9, neutral: 0.05 } };
     }
-    return { label: 'Neutral', score: 0, probs: { positive: 0.3, negative: 0.3, neutral: 0.4 } };
+    return { label: 'NEUTRAL', score: 0, probs: { positive: 0.3, negative: 0.3, neutral: 0.4 } };
   }),
   warmupSentiment: vi.fn(async () => {})
 }));

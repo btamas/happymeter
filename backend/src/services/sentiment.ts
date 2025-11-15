@@ -14,11 +14,11 @@ function getClassifier() {
   return _classifierPromise;
 }
 
-export type SentimentLabel = 'Good' | 'Neutral' | 'Bad';
+export type SentimentLabel = 'GOOD' | 'NEUTRAL' | 'BAD';
 
 export async function analyzeSentiment(text: string): Promise<{
   score: number; // signed integer, ~[-10..10]
-  label: SentimentLabel; // Good | Neutral | Bad
+  label: SentimentLabel; // GOOD | NEUTRAL | BAD
   probs: Record<string, number>; // raw class probs for debugging
 }> {
   const classifier = await getClassifier();
@@ -39,7 +39,7 @@ export async function analyzeSentiment(text: string): Promise<{
   else if (neg >= pos && neg >= neu) primary = 'negative';
 
   // Map to your domain labels
-  const label: SentimentLabel = primary === 'positive' ? 'Good' : primary === 'negative' ? 'Bad' : 'Neutral';
+  const label: SentimentLabel = primary === 'positive' ? 'GOOD' : primary === 'negative' ? 'BAD' : 'NEUTRAL';
 
   // Signed score: positive confidence minus negative confidence, scaled to int
   const score = Math.round((pos - neg) * 10); // ~[-10..10]

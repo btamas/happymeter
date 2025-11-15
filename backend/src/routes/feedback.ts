@@ -114,7 +114,7 @@ router.post('/feedback', feedbackLimiter, async (req: Request, res: Response) =>
     }
 
     const sentimentResult = await analyzeSentiment(text);
-    const sentimentEnum = sentimentResult.label.toUpperCase() as 'GOOD' | 'NEUTRAL' | 'BAD';
+    const sentimentEnum = sentimentResult.label;
 
     const confidenceScore = Math.max(
       sentimentResult.probs.positive || 0,

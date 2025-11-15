@@ -8,21 +8,21 @@ describe('Sentiment Analysis Service', () => {
     expect(result).toHaveProperty('label');
     expect(result).toHaveProperty('score');
     expect(result).toHaveProperty('probs');
-    expect(result.label).toBe('Good');
+    expect(result.label).toBe('GOOD');
     expect(result.score).toBeGreaterThan(0);
   }, 30000);
 
   it('should classify clearly negative text as BAD', async () => {
     const result = await analyzeSentiment('This is terrible and awful, worst experience ever!');
 
-    expect(result.label).toBe('Bad');
+    expect(result.label).toBe('BAD');
     expect(result.score).toBeLessThan(0);
   }, 30000);
 
   it('should classify neutral text appropriately', async () => {
     const result = await analyzeSentiment('The product arrived on time.');
 
-    expect(['Good', 'Bad', 'Neutral']).toContain(result.label);
+    expect(['GOOD', 'BAD', 'NEUTRAL']).toContain(result.label);
     expect(result.score).toBeGreaterThanOrEqual(-10);
     expect(result.score).toBeLessThanOrEqual(10);
   }, 30000);
@@ -48,16 +48,16 @@ describe('Sentiment Analysis Service', () => {
   it('should handle short text', async () => {
     const result = await analyzeSentiment('Great!');
 
-    expect(result.label).toBe('Good');
-    expect(['Good', 'Bad', 'Neutral']).toContain(result.label);
+    expect(result.label).toBe('GOOD');
+    expect(['GOOD', 'BAD', 'NEUTRAL']).toContain(result.label);
   }, 30000);
 
   it('should handle long text', async () => {
     const longText = 'I really love this product. '.repeat(20);
     const result = await analyzeSentiment(longText);
 
-    expect(result.label).toBe('Good');
-    expect(['Good', 'Bad', 'Neutral']).toContain(result.label);
+    expect(result.label).toBe('GOOD');
+    expect(['GOOD', 'BAD', 'NEUTRAL']).toContain(result.label);
   }, 30000);
 
   it('should return score in approximate range [-10, 10]', async () => {
@@ -79,6 +79,6 @@ describe('Sentiment Analysis Service', () => {
     expect(result).toHaveProperty('label');
     expect(result).toHaveProperty('score');
     expect(result).toHaveProperty('probs');
-    expect(['Good', 'Bad', 'Neutral']).toContain(result.label);
+    expect(['GOOD', 'BAD', 'NEUTRAL']).toContain(result.label);
   }, 30000);
 });
