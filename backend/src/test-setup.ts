@@ -22,13 +22,15 @@ vi.mock('./db/index.js', () => ({
 
 beforeAll(async () => {
   await pglite.exec(`
+    CREATE TYPE sentiment_type AS ENUM ('GOOD', 'BAD', 'NEUTRAL');
+
     CREATE TABLE IF NOT EXISTS feedback (
       id SERIAL PRIMARY KEY,
       text VARCHAR(1000) NOT NULL,
-      sentiment VARCHAR(20) NOT NULL,
-      confidence_score DECIMAL(3, 2),
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      sentiment sentiment_type NOT NULL,
+      confidence_score DECIMAL(5, 4),
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
     );
   `);
 });

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -52,7 +52,18 @@ const mockFeedbackData = {
   offset: 0
 };
 
+const mockStatsData = {
+  total: 3,
+  good: 1,
+  bad: 1,
+  neutral: 1
+};
+
 describe('Admin', () => {
+  beforeEach(() => {
+    vi.mocked(api.fetchFeedbackStats).mockResolvedValue(mockStatsData);
+  });
+
   it('should render admin dashboard title and description', async () => {
     vi.mocked(api.fetchFeedback).mockResolvedValue(mockFeedbackData);
 

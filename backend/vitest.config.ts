@@ -7,6 +7,7 @@ export default defineConfig({
     setupFiles: ['./src/test-setup.ts'],
     testTimeout: 60000,
     hookTimeout: 60000,
+    exclude: ['**/node_modules/**', '**/dist/**'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html'],
