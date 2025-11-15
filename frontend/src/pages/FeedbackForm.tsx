@@ -30,7 +30,8 @@ export default function FeedbackForm() {
       case 'GOOD':
         return {
           title: 'Thank you for your positive feedback!',
-          message: 'We\'re delighted to hear you had a great experience. We\'ll continue working hard to maintain the quality you expect from us.',
+          message:
+            "We're delighted to hear you had a great experience. We'll continue working hard to maintain the quality you expect from us.",
           bgColor: 'bg-green-50',
           borderColor: 'border-green-200',
           textColor: 'text-green-800'
@@ -38,7 +39,8 @@ export default function FeedbackForm() {
       case 'BAD':
         return {
           title: 'We sincerely apologize',
-          message: 'We\'re sorry to hear about the issues you\'ve experienced. Your feedback is important to us, and we will take it seriously to investigate and address your concerns.',
+          message:
+            "We're sorry to hear about the issues you've experienced. Your feedback is important to us, and we will take it seriously to investigate and address your concerns.",
           bgColor: 'bg-red-50',
           borderColor: 'border-red-200',
           textColor: 'text-red-800'
@@ -46,7 +48,8 @@ export default function FeedbackForm() {
       case 'NEUTRAL':
         return {
           title: 'Thank you for your feedback!',
-          message: 'We appreciate you taking the time to share your thoughts. We\'re continuously working to improve our service and deliver a better experience.',
+          message:
+            "We appreciate you taking the time to share your thoughts. We're continuously working to improve our service and deliver a better experience.",
           bgColor: 'bg-blue-50',
           borderColor: 'border-blue-200',
           textColor: 'text-blue-800'
@@ -78,19 +81,15 @@ export default function FeedbackForm() {
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
                 required
               />
-              <div className="mt-2 text-sm text-gray-500 text-right">
-                {text.length} / 1000 characters
-              </div>
+              <div className="mt-2 text-sm text-gray-500 text-right">{text.length} / 1000 characters</div>
             </div>
 
-            {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-                {error}
-              </div>
-            )}
+            {error && <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">{error}</div>}
 
             {success && (
-              <div className={`${getSentimentMessage(success).bgColor} border ${getSentimentMessage(success).borderColor} px-4 py-3 rounded-lg`}>
+              <div
+                className={`${getSentimentMessage(success).bgColor} border ${getSentimentMessage(success).borderColor} px-4 py-3 rounded-lg`}
+              >
                 <p className={`${getSentimentMessage(success).textColor} font-semibold mb-2`}>
                   {getSentimentMessage(success).title}
                 </p>

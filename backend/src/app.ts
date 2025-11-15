@@ -6,6 +6,8 @@ import { swaggerSpec } from './swagger.js';
 
 export const app = express();
 
+app.set('trust proxy', 1);
+
 app.use(express.json({ limit: '100kb' }));
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));

@@ -139,7 +139,9 @@ describe('API Endpoints', () => {
         .auth(process.env.ADMIN_USERNAME || 'admin', process.env.ADMIN_PASSWORD || 'admin123')
         .expect(200);
 
-      expect(response.body.feedback.every((f: { sentiment?: string }) => !f.sentiment || f.sentiment === 'GOOD')).toBe(true);
+      expect(response.body.feedback.every((f: { sentiment?: string }) => !f.sentiment || f.sentiment === 'GOOD')).toBe(
+        true
+      );
     });
   });
 });

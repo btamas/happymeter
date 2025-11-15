@@ -239,7 +239,10 @@ router.get('/feedback', adminAuth, async (req: Request, res: Response) => {
     const [feedbackList, countResult] = await Promise.all([
       query.orderBy(desc(feedback.createdAt)).limit(limit).offset(offset),
       sentimentFilter && ['GOOD', 'BAD', 'NEUTRAL'].includes(sentimentFilter)
-        ? db.select({ count: sql<number>`count(*)::int` }).from(feedback).where(eq(feedback.sentiment, sentimentFilter as 'GOOD' | 'BAD' | 'NEUTRAL'))
+        ? db
+            .select({ count: sql<number>`count(*)::int` })
+            .from(feedback)
+            .where(eq(feedback.sentiment, sentimentFilter as 'GOOD' | 'BAD' | 'NEUTRAL'))
         : db.select({ count: sql<number>`count(*)::int` }).from(feedback)
     ]);
 

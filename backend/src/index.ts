@@ -16,7 +16,6 @@ app.listen(PORT, async () => {
     // eslint-disable-next-line no-console
     console.log('✅ Database connected');
   } catch (error) {
-     
     console.error('⚠️  Database connection failed:', error);
   }
 
@@ -28,7 +27,6 @@ app.listen(PORT, async () => {
       console.log('✅ Sentiment model ready');
     })
     .catch(error => {
-       
       console.error('⚠️  Failed to warm up sentiment model:', error);
     });
 });

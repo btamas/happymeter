@@ -21,6 +21,7 @@ A customer feedback system with automated sentiment analysis, designed as a Proo
 ## Overview
 
 HappyMeter enables businesses to:
+
 - Collect customer feedback through a simple web form
 - Automatically classify feedback sentiment (Good, Bad, or Neutral) using machine learning
 - Monitor customer sentiment trends through an admin dashboard
@@ -29,12 +30,14 @@ HappyMeter enables businesses to:
 ## Features
 
 ### Customer Features
+
 - Simple feedback form with 1000 character limit
 - Real-time character counter
 - Instant sentiment feedback after submission
 - Mobile-responsive design
 
 ### Admin Features
+
 - Protected admin dashboard with HTTP Basic Authentication
 - View all customer feedback with sentiment classifications
 - Dashboard statistics (total feedback, breakdown by sentiment)
@@ -43,6 +46,7 @@ HappyMeter enables businesses to:
 - Confidence scores for each sentiment classification
 
 ### Technical Features
+
 - RESTful API with OpenAPI/Swagger documentation
 - Machine learning-based sentiment analysis using Hugging Face transformers
 - PostgreSQL database with Drizzle ORM
@@ -58,6 +62,7 @@ HappyMeter enables businesses to:
 ## Tech Stack
 
 ### Frontend
+
 - **Framework**: React 18 with TypeScript
 - **Build Tool**: Vite 5
 - **Styling**: Tailwind CSS
@@ -66,6 +71,7 @@ HappyMeter enables businesses to:
 - **Table**: TanStack React Table
 
 ### Backend
+
 - **Runtime**: Node.js 22
 - **Framework**: Express 4
 - **Language**: TypeScript
@@ -75,10 +81,12 @@ HappyMeter enables businesses to:
 - **API Documentation**: Swagger UI Express
 
 ### Database
+
 - **Database**: PostgreSQL 16
 - **Schema Management**: Drizzle ORM with migrations
 
 ### DevOps
+
 - **Containerization**: Docker & Docker Compose
 - **Reverse Proxy**: Nginx with SSL/HTTPS
 - **Package Manager**: npm workspaces (monorepo)
@@ -142,14 +150,14 @@ CREATE TABLE feedback (
 
 ### Fields
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `id` | SERIAL | Auto-incrementing primary key |
-| `text` | VARCHAR(1000) | Customer feedback text (max 1000 characters) |
-| `sentiment` | ENUM | Sentiment classification: 'GOOD', 'BAD', or 'NEUTRAL' |
-| `confidence_score` | DECIMAL(5,4) | ML model confidence score (0.0000 to 1.0000) |
-| `created_at` | TIMESTAMP | When the feedback was submitted |
-| `updated_at` | TIMESTAMP | Last update timestamp |
+| Field              | Type          | Description                                           |
+| ------------------ | ------------- | ----------------------------------------------------- |
+| `id`               | SERIAL        | Auto-incrementing primary key                         |
+| `text`             | VARCHAR(1000) | Customer feedback text (max 1000 characters)          |
+| `sentiment`        | ENUM          | Sentiment classification: 'GOOD', 'BAD', or 'NEUTRAL' |
+| `confidence_score` | DECIMAL(5,4)  | ML model confidence score (0.0000 to 1.0000)          |
+| `created_at`       | TIMESTAMP     | When the feedback was submitted                       |
+| `updated_at`       | TIMESTAMP     | Last update timestamp                                 |
 
 ### Indexes
 
@@ -247,6 +255,7 @@ cd ..
 ```
 
 This creates:
+
 - The `feedback` table and `sentiment_type` enum
 - Automatic `updated_at` trigger for timestamp updates
 - Performance indexes on `sentiment`, `created_at`, and composite queries
@@ -256,15 +265,19 @@ This creates:
 Open two terminal windows:
 
 **Terminal 1 - Backend:**
+
 ```bash
 npm run dev:backend
 ```
+
 Backend will start at http://localhost:4000
 
 **Terminal 2 - Frontend:**
+
 ```bash
 npm run dev:frontend
 ```
+
 Frontend will start at http://localhost:5173
 
 #### 7. Access the Application
@@ -307,12 +320,14 @@ npm run start:prod
 ```
 
 **What happens during startup:**
+
 1. **frontend-builder** service builds the React app and outputs to `frontend/dist/`
 2. **backend** service builds and starts the Express API
 3. **db** service starts PostgreSQL database
 4. **nginx** serves the built frontend and proxies API requests to backend
 
 This starts:
+
 - Frontend Builder (builds once, then exits)
 - PostgreSQL database (port 5432)
 - Backend API (internal port 4000)
@@ -357,6 +372,7 @@ docker-compose up -d
 ```
 
 This approach is useful if:
+
 - You want to inspect the build output before deployment
 - You're deploying to a different environment
 - You want faster Docker startup (no build step)
@@ -370,6 +386,7 @@ This approach is useful if:
 Submit customer feedback for sentiment analysis.
 
 **Request:**
+
 ```json
 {
   "text": "Great product, very satisfied!"
@@ -377,6 +394,7 @@ Submit customer feedback for sentiment analysis.
 ```
 
 **Response (201 Created):**
+
 ```json
 {
   "id": 1,
@@ -388,15 +406,18 @@ Submit customer feedback for sentiment analysis.
 ```
 
 **Validation:**
+
 - `text` is required
 - `text` must not be empty
 - `text` must be max 1000 characters
 
 **Rate Limiting:**
+
 - Maximum 5 requests per minute per IP address
 - Returns `429 Too Many Requests` when limit exceeded
 
 **Error Responses:**
+
 - `400 Bad Request`: Invalid input (missing text, too long, etc.)
 - `429 Too Many Requests`: Rate limit exceeded
 - `500 Internal Server Error`: Server error during processing
@@ -406,21 +427,25 @@ Submit customer feedback for sentiment analysis.
 Retrieve all feedback with sentiment classifications. **Requires authentication.**
 
 **Authentication:**
+
 - HTTP Basic Auth required
 - Username: `admin` (configurable via `ADMIN_USERNAME`)
 - Password: `admin123` (configurable via `ADMIN_PASSWORD`)
 
 **Query Parameters:**
+
 - `limit` (optional): Number of results per page (default: 20)
 - `offset` (optional): Number of results to skip (default: 0)
 - `sentiment` (optional): Filter by sentiment - `GOOD`, `BAD`, or `NEUTRAL`
 
 **Request:**
+
 ```bash
 curl -u admin:admin123 "http://localhost:4000/api/feedback?limit=10&offset=0&sentiment=GOOD"
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "feedback": [
@@ -440,6 +465,7 @@ curl -u admin:admin123 "http://localhost:4000/api/feedback?limit=10&offset=0&sen
 ```
 
 **Error Responses:**
+
 - `401 Unauthorized`: Missing or invalid credentials
 - `500 Internal Server Error`: Server error
 
@@ -448,6 +474,7 @@ curl -u admin:admin123 "http://localhost:4000/api/feedback?limit=10&offset=0&sen
 Health check endpoint to verify backend and database connectivity.
 
 **Response (200 OK):**
+
 ```json
 {
   "status": "healthy",
@@ -459,6 +486,7 @@ Health check endpoint to verify backend and database connectivity.
 ### Interactive API Documentation
 
 Swagger UI is available at `/api-docs` when the backend is running:
+
 - **Local Dev**: http://localhost:4000/api-docs
 - **Docker**: https://localhost/api-docs
 
@@ -474,12 +502,14 @@ The admin dashboard is protected with HTTP Basic Authentication.
 ### Changing Admin Credentials
 
 1. **Local Development**: Edit `backend/.env`
+
    ```env
    ADMIN_USERNAME=your_username
    ADMIN_PASSWORD=your_secure_password
    ```
 
 2. **Docker Production**: Set environment variables before starting
+
    ```bash
    export ADMIN_USERNAME=your_username
    export ADMIN_PASSWORD=your_secure_password
@@ -487,6 +517,7 @@ The admin dashboard is protected with HTTP Basic Authentication.
    ```
 
    Or edit `docker-compose.yml` to set different defaults:
+
    ```yaml
    environment:
      - ADMIN_USERNAME=${ADMIN_USERNAME:-your_username}
@@ -566,11 +597,13 @@ npm run build
 ```
 
 **Build output:**
+
 - Location: `frontend/dist/`
 - Contents: `index.html`, JavaScript bundles, CSS, assets
 - Optimizations: Minification, tree-shaking, code splitting
 
 **Build steps:**
+
 1. TypeScript compilation (`tsc -b`)
 2. Vite build (bundling, optimization)
 3. Output to `dist/` directory
@@ -588,21 +621,25 @@ npm run preview
 ### Docker Build Integration
 
 Docker Compose includes a `frontend-builder` service that:
+
 1. Installs npm dependencies in a Node.js container
 2. Runs `npm run build`
 3. Copies `dist/` contents to the host filesystem
 4. Nginx then serves the built files
 
 **Manual build before Docker:**
+
 ```bash
 npm run build:frontend
 docker-compose up nginx backend db
 ```
 
 **Automatic build with Docker:**
+
 ```bash
 docker-compose up --build
 ```
+
 The `frontend-builder` service runs automatically and exits after building.
 
 ## Development Commands
@@ -714,6 +751,7 @@ frontend/src/
 #### Backend Tests (20 tests)
 
 **API Endpoint Tests** (`routes/feedback.test.ts` - 11 tests):
+
 - ✅ POST /api/feedback - Valid feedback submission
 - ✅ POST /api/feedback - Missing text validation
 - ✅ POST /api/feedback - Empty text validation
@@ -727,6 +765,7 @@ frontend/src/
 - ✅ GET /api/feedback - Sentiment filtering
 
 **Sentiment Analysis Tests** (`services/sentiment.test.ts` - 9 tests):
+
 - ✅ Positive text classification
 - ✅ Negative text classification
 - ✅ Neutral text classification
@@ -740,6 +779,7 @@ frontend/src/
 #### Frontend Tests (42 tests)
 
 **FeedbackForm Component Tests** (`pages/FeedbackForm.test.tsx` - 11 tests):
+
 - ✅ Renders form with all elements
 - ✅ Updates character count as user types
 - ✅ Disables submit button when textarea is empty
@@ -753,6 +793,7 @@ frontend/src/
 - ✅ Has link to admin dashboard
 
 **Admin Dashboard Tests** (`pages/Admin.test.tsx` - 18 tests):
+
 - ✅ Renders admin dashboard title and description
 - ✅ Shows loading state initially
 - ✅ Displays feedback data in table
@@ -773,6 +814,7 @@ frontend/src/
 - ✅ Has link back to feedback form
 
 **API Utility Tests** (`lib/api.test.ts` - 13 tests):
+
 - ✅ Fetches feedback with no parameters
 - ✅ Fetches feedback with limit parameter
 - ✅ Fetches feedback with offset parameter
@@ -790,6 +832,7 @@ frontend/src/
 ### Test Framework
 
 **Backend:**
+
 - **Test Runner**: Vitest
 - **HTTP Testing**: Supertest
 - **Database**: PGlite (in-memory PostgreSQL via WASM) - no Docker required!
@@ -797,6 +840,7 @@ frontend/src/
 - **Integration Tests**: Sentiment service tests use real ML model
 
 **Frontend:**
+
 - **Test Runner**: Vitest
 - **Component Testing**: React Testing Library
 - **User Interaction**: @testing-library/user-event
@@ -804,6 +848,7 @@ frontend/src/
 - **API Mocking**: Vitest mocks
 
 **Key Features**:
+
 - ✅ **No external dependencies** - Backend tests use PGlite (in-memory PostgreSQL), no Docker required
 - ✅ **Fast execution** - 62 tests run in ~4 seconds
 - ✅ **Comprehensive coverage** - Backend: 88.4%, Frontend: Full component & API coverage
@@ -842,17 +887,20 @@ Total: 62 tests passed across 5 test files
 ### Security Features
 
 **Rate Limiting:**
+
 - Feedback submission endpoint limited to 5 requests per minute per IP
 - Prevents spam and abuse
 - Disabled automatically in test environment
 - Returns `429 Too Many Requests` with clear error message
 
 **Request Body Size Limits:**
+
 - Global limit of 100KB for all JSON requests
 - Prevents large payload attacks
 - Configured via Express middleware
 
 **Authentication:**
+
 - HTTP Basic Authentication for admin endpoints
 - Configurable credentials via environment variables
 - Browser native authentication dialog
@@ -860,6 +908,7 @@ Total: 62 tests passed across 5 test files
 ### Performance Optimizations
 
 **Database Connection Pooling:**
+
 - Minimum 2 connections maintained
 - Maximum 20 connections (configurable)
 - 30-second idle timeout
@@ -867,12 +916,14 @@ Total: 62 tests passed across 5 test files
 - Prevents connection exhaustion
 
 **Database Indexes:**
+
 - `idx_feedback_sentiment`: Speeds up sentiment filtering
 - `idx_feedback_created_at`: Optimizes time-based sorting
 - `idx_feedback_sentiment_created_at`: Composite index for filtered + sorted queries
 - Significantly improves admin dashboard query performance
 
 **Automatic Triggers:**
+
 - PostgreSQL trigger automatically updates `updated_at` on row modifications
 - Ensures data consistency without application logic
 - Zero performance overhead for reads
@@ -909,10 +960,10 @@ HappyMeter uses the `@xenova/transformers` library with the `twitter-roberta-bas
 ### Sentiment Mapping
 
 | Model Output | HappyMeter Classification |
-|--------------|---------------------------|
-| positive     | GOOD                     |
-| negative     | BAD                      |
-| neutral      | NEUTRAL                  |
+| ------------ | ------------------------- |
+| positive     | GOOD                      |
+| negative     | BAD                       |
+| neutral      | NEUTRAL                   |
 
 ## Contributing
 

@@ -64,9 +64,7 @@ describe('Admin', () => {
   });
 
   it('should show loading state initially', () => {
-    vi.mocked(api.fetchFeedback).mockImplementation(
-      () => new Promise(() => {})
-    );
+    vi.mocked(api.fetchFeedback).mockImplementation(() => new Promise(() => {}));
 
     render(<Admin />, { wrapper: createWrapper() });
 

@@ -1,11 +1,6 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import {
-  useReactTable,
-  getCoreRowModel,
-  flexRender,
-  createColumnHelper
-} from '@tanstack/react-table';
+import { useReactTable, getCoreRowModel, flexRender, createColumnHelper } from '@tanstack/react-table';
 import { fetchFeedback } from '../lib/api';
 import type { Feedback, Sentiment } from '../lib/types';
 
@@ -33,11 +28,7 @@ const columns = [
         BAD: 'bg-red-100 text-red-800',
         NEUTRAL: 'bg-yellow-100 text-yellow-800'
       };
-      return (
-        <span className={`px-2 py-1 rounded-full text-xs font-medium ${colors[sentiment]}`}>
-          {sentiment}
-        </span>
-      );
+      return <span className={`px-2 py-1 rounded-full text-xs font-medium ${colors[sentiment]}`}>{sentiment}</span>;
     }
   }),
   columnHelper.accessor('confidenceScore', {
@@ -138,9 +129,7 @@ export default function Admin() {
                 setPage(0);
               }}
               className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                sentimentFilter === 'GOOD'
-                  ? 'bg-green-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                sentimentFilter === 'GOOD' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
               Good
@@ -151,9 +140,7 @@ export default function Admin() {
                 setPage(0);
               }}
               className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                sentimentFilter === 'BAD'
-                  ? 'bg-red-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                sentimentFilter === 'BAD' ? 'bg-red-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
               Bad
