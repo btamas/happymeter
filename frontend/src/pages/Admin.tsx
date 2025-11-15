@@ -51,6 +51,7 @@ const columns = [
 ];
 
 export default function Admin() {
+  'use no memo';
   const [page, setPage] = useState(0);
   const [sentimentFilter, setSentimentFilter] = useState<Sentiment | undefined>();
   const pageSize = 20;
@@ -65,6 +66,7 @@ export default function Admin() {
       })
   });
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data: data?.feedback ?? [],
     columns,
