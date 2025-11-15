@@ -15,7 +15,9 @@ describe('FeedbackForm', () => {
     render(<FeedbackForm />);
 
     expect(screen.getByText('HappyMeter')).toBeInTheDocument();
-    expect(screen.getByText('Share your feedback and let AI analyze your sentiment')).toBeInTheDocument();
+    expect(
+      screen.getByText('Share your feedback about anything in English and let AI analyze your sentiment')
+    ).toBeInTheDocument();
     expect(screen.getByLabelText('Your Feedback')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('Tell us what you think...')).toBeInTheDocument();
     expect(screen.getByText('0 / 1000 characters')).toBeInTheDocument();
