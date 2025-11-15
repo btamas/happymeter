@@ -30,7 +30,16 @@ const options: swaggerJsdoc.Options = {
         name: 'Health',
         description: 'Health check endpoints'
       }
-    ]
+    ],
+    components: {
+      securitySchemes: {
+        basicAuth: {
+          type: 'http',
+          scheme: 'basic',
+          description: 'HTTP Basic Authentication for admin endpoints'
+        }
+      }
+    }
   },
   apis: ['./src/routes/*.ts', './src/index.ts']
 };

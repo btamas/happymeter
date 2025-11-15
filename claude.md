@@ -71,8 +71,9 @@ HappyMeter is a customer feedback system with sentiment analysis designed as a P
 
 - **GET /api/feedback**
   - Retrieve all stored feedback with sentiment classifications
-  - Admin endpoint for dashboard view
+  - **Admin endpoint** - Protected with HTTP Basic Authentication
   - Returns: feedback text, sentiment, timestamp, ID
+  - Requires: `Authorization: Basic <base64(username:password)>` header
 
 ## Database Schema
 
@@ -137,9 +138,11 @@ npm run dev:frontend # Port 5173
 
 ```env
 DATABASE_URL=postgresql://user:password@localhost:5432/happymeter
-SENTIMENT_API_KEY=your_sentiment_service_key
 NODE_ENV=development
 PORT=4000
+# Admin authentication (HTTP Basic Auth)
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=admin123
 ```
 
 ## Deployment
@@ -174,20 +177,20 @@ npm run deploy
 - [ ] Cloud deployment (GCP)
 - [ ] CI/CD pipeline
 - [ ] Infrastructure as Code
-- [ ] Admin authentication/authorization
+- [x] Admin authentication/authorization (HTTP Basic Auth)
 
 ## Testing
 
 ### API Testing
 
 ```bash
-# Test feedback submission
+# Test feedback submission (public endpoint)
 curl -X POST http://localhost:4000/api/feedback \
   -H "Content-Type: application/json" \
   -d '{"text": "Great product, very satisfied!"}'
 
-# Test feedback retrieval
-curl http://localhost:4000/api/feedback
+# Test feedback retrieval (requires authentication)
+curl -u admin:admin123 http://localhost:4000/api/feedback
 ```
 
 ## Sentiment Analysis Integration
@@ -234,7 +237,21 @@ happymeter/
 
 - **Sentiment Library**: Use `sentiment` npm package for simplicity
 - **Database**: Single `feedback` table with text, sentiment, timestamps
-- **Authentication**: Skip for MVP, add as bonus feature
+- **Authentication**: HTTP Basic Auth via `express-basic-auth` package for admin endpoints
 - **Styling**: Tailwind utility classes, mobile-first responsive
+
+## Authentication
+
+### HTTP Basic Authentication
+
+The admin endpoint (GET `/api/feedback`) is protected with HTTP Basic Authentication:
+
+- **Package**: `express-basic-auth`
+- **Credentials**: Configured via environment variables
+  - `ADMIN_USERNAME` (default: "admin")
+  - `ADMIN_PASSWORD` (default: "admin123")
+- **Implementation**: Middleware applied to GET `/api/feedback` route
+- **Browser behavior**: Browser will display native authentication dialog when accessing `/admin` page
+- **API usage**: Include `Authorization: Basic <credentials>` header in requests
 
 ---

@@ -1,10 +1,24 @@
 import { Router, Request, Response } from 'express';
+import basicAuth from 'express-basic-auth';
 import { db } from '../db/index.js';
 import { feedback } from '../db/schema.js';
 import { analyzeSentiment } from '../services/sentiment.js';
 import { desc, eq, sql } from 'drizzle-orm';
 
 const router = Router();
+
+// Basic auth middleware for admin endpoints
+const adminAuth = basicAuth({
+  users: {
+    [process.env.ADMIN_USERNAME || 'admin']: process.env.ADMIN_PASSWORD || 'admin123'
+  },
+  challenge: true,
+  realm: 'HappyMeter Admin',
+  unauthorizedResponse: () => ({
+    error: 'Unauthorized',
+    message: 'Authentication required to access admin endpoints'
+  })
+});
 
 /**
  * @openapi
@@ -125,8 +139,10 @@ router.post('/feedback', async (req: Request, res: Response) => {
  *   get:
  *     tags:
  *       - Feedback
- *     summary: Retrieve all feedback
- *     description: Get all submitted feedback with sentiment analysis results, ordered by most recent first
+ *     summary: Retrieve all feedback (Admin only)
+ *     description: Get all submitted feedback with sentiment analysis results, ordered by most recent first. Requires HTTP Basic Authentication.
+ *     security:
+ *       - basicAuth: []
  *     parameters:
  *       - in: query
  *         name: limit
@@ -189,10 +205,12 @@ router.post('/feedback', async (req: Request, res: Response) => {
  *                 offset:
  *                   type: integer
  *                   example: 0
+ *       401:
+ *         description: Unauthorized - Authentication required
  *       500:
  *         description: Internal server error
  */
-router.get('/feedback', async (req: Request, res: Response) => {
+router.get('/feedback', adminAuth, async (req: Request, res: Response) => {
   try {
     const limit = Math.max(1, Math.min(100, parseInt(req.query.limit as string) || 20));
     const offset = Math.max(0, parseInt(req.query.offset as string) || 0);
