@@ -477,9 +477,9 @@ Health check endpoint to verify backend and database connectivity.
 
 ```json
 {
-  "status": "healthy",
-  "timestamp": "2025-11-15T10:30:00.000Z",
-  "database": "connected"
+  "status": "ok",
+  "database": "connected",
+  "timestamp": "2025-11-15T10:30:00.000Z"
 }
 ```
 
