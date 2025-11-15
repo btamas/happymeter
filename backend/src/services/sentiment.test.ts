@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { analyzeSentiment } from './sentiment.js';
+import { analyzeSentiment, warmupSentiment } from './sentiment.js';
 
 describe('Sentiment Analysis Service', () => {
   it('should classify clearly positive text as GOOD', async () => {
@@ -65,5 +65,20 @@ describe('Sentiment Analysis Service', () => {
 
     expect(result.score).toBeGreaterThanOrEqual(-10);
     expect(result.score).toBeLessThanOrEqual(10);
+  }, 30000);
+
+  it('should successfully warmup sentiment model', async () => {
+    await expect(warmupSentiment()).resolves.not.toThrow();
+  }, 30000);
+
+  it('should be able to analyze after warmup', async () => {
+    await warmupSentiment();
+
+    const result = await analyzeSentiment('Test after warmup');
+
+    expect(result).toHaveProperty('label');
+    expect(result).toHaveProperty('score');
+    expect(result).toHaveProperty('probs');
+    expect(['Good', 'Bad', 'Neutral']).toContain(result.label);
   }, 30000);
 });

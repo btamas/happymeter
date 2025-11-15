@@ -675,7 +675,6 @@ backend/src/
 - ✅ GET /api/feedback - Invalid credentials
 - ✅ GET /api/feedback - Pagination support
 - ✅ GET /api/feedback - Sentiment filtering
-- ✅ GET /api/health - Health check endpoint
 
 **Sentiment Analysis Tests** (`services/sentiment.test.ts`):
 - ✅ Positive text classification
@@ -685,24 +684,31 @@ backend/src/
 - ✅ Short text handling
 - ✅ Long text handling
 - ✅ Score range validation (-10 to +10)
+- ✅ Model warmup function
+- ✅ Analysis after warmup
 
 ### Test Framework
 
 - **Test Runner**: Vitest
 - **HTTP Testing**: Supertest
+- **Database**: PGlite (in-memory PostgreSQL via WASM) - no Docker required!
 - **Mocking**: Sentiment service is mocked in API tests for speed
 - **Integration Tests**: Sentiment service tests use real ML model
+
+**Key Feature**: Tests run completely independently without requiring a running PostgreSQL container. The test setup uses [@electric-sql/pglite](https://github.com/electric-sql/pglite) to provide an in-memory PostgreSQL database that behaves identically to production.
 
 ### Example Test Run
 
 ```
-✓ src/services/sentiment.test.ts (7 tests) 343ms
-✓ src/routes/feedback.test.ts (12 tests) 80ms
+✓ src/routes/feedback.test.ts (11 tests) 45ms
+✓ src/services/sentiment.test.ts (9 tests) 229ms
 
 Test Files  2 passed (2)
-     Tests  19 passed (19)
-  Duration  683ms
+     Tests  20 passed (20)
+  Duration  965ms
 ```
+
+**Note**: First test run downloads the sentiment analysis model (~500MB), which takes longer. Subsequent runs are fast.
 
 ## Sentiment Analysis Details
 

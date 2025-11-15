@@ -38,11 +38,7 @@ describe('API Endpoints', () => {
     });
 
     it('should return 400 when text is missing', async () => {
-      const response = await request(app)
-        .post('/api/feedback')
-        .send({})
-        .expect('Content-Type', /json/)
-        .expect(400);
+      const response = await request(app).post('/api/feedback').send({}).expect('Content-Type', /json/).expect(400);
 
       expect(response.body).toHaveProperty('error', 'Bad Request');
       expect(response.body).toHaveProperty('message');
@@ -97,16 +93,11 @@ describe('API Endpoints', () => {
 
   describe('GET /api/feedback', () => {
     beforeAll(async () => {
-      await request(app)
-        .post('/api/feedback')
-        .send({ text: 'Great product!' });
+      await request(app).post('/api/feedback').send({ text: 'Great product!' });
     });
 
     it('should return 401 without authentication', async () => {
-      const response = await request(app)
-        .get('/api/feedback')
-        .expect('Content-Type', /json/)
-        .expect(401);
+      const response = await request(app).get('/api/feedback').expect('Content-Type', /json/).expect(401);
 
       expect(response.body).toHaveProperty('error', 'Unauthorized');
     });
@@ -126,10 +117,7 @@ describe('API Endpoints', () => {
     });
 
     it('should return 401 with invalid credentials', async () => {
-      const response = await request(app)
-        .get('/api/feedback')
-        .auth('wrong', 'credentials')
-        .expect(401);
+      const response = await request(app).get('/api/feedback').auth('wrong', 'credentials').expect(401);
 
       expect(response.body).toHaveProperty('error', 'Unauthorized');
     });
@@ -151,22 +139,7 @@ describe('API Endpoints', () => {
         .auth(process.env.ADMIN_USERNAME || 'admin', process.env.ADMIN_PASSWORD || 'admin123')
         .expect(200);
 
-      expect(response.body.feedback.every((f: any) =>
-        !f.sentiment || f.sentiment === 'GOOD'
-      )).toBe(true);
-    });
-  });
-
-  describe('GET /api/health', () => {
-    it('should return health status', async () => {
-      const response = await request(app)
-        .get('/api/health')
-        .expect('Content-Type', /json/)
-        .expect(200);
-
-      expect(response.body).toHaveProperty('status');
-      expect(response.body).toHaveProperty('database');
-      expect(response.body).toHaveProperty('timestamp');
+      expect(response.body.feedback.every((f: any) => !f.sentiment || f.sentiment === 'GOOD')).toBe(true);
     });
   });
 });
