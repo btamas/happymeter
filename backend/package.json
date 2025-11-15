@@ -11,9 +11,8 @@
     "test:coverage": "vitest run --coverage",
     "lint": "eslint .",
     "test:sentiment": "tsx src/test-sentiment.ts",
-    "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate",
-    "db:push": "drizzle-kit push",
+    "db:generate": "drizzle-kit generate:pg",
+    "db:push": "tsx src/migrate.ts",
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {

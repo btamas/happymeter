@@ -58,11 +58,11 @@ export default function FeedbackForm() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+    <main className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
       <div className="max-w-2xl w-full">
         <div className="text-center mb-8">
           <h1 className="text-5xl font-bold text-gray-900 mb-2">HappyMeter</h1>
-          <p className="text-gray-600">Share your feedback and let AI analyze your sentiment</p>
+          <p className="text-gray-600">Share your feedback about anything in English and let AI analyze your sentiment</p>
         </div>
 
         <div className="bg-white rounded-xl shadow-lg p-8">
@@ -115,6 +115,6 @@ export default function FeedbackForm() {
           </a>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

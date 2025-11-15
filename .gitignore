@@ -38,6 +38,10 @@ coverage/
 .temp
 tmp/
 
+# Firebase
+.firebase/
+firebase-debug.log
+
 # SSL certificates (generate locally)
 nginx/certs/*.crt
 nginx/certs/*.key
