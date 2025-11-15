@@ -116,11 +116,11 @@ router.post('/feedback', feedbackLimiter, async (req: Request, res: Response) =>
     const sentimentResult = await analyzeSentiment(text);
     const sentimentEnum = sentimentResult.label;
 
-    const confidenceScore = Math.max(
-      sentimentResult.probs.positive || 0,
-      sentimentResult.probs.neutral || 0,
-      sentimentResult.probs.negative || 0
-    ).toFixed(4);
+    // The max probability corresponds to the selected label
+    const confidenceScore =
+      sentimentResult.probs[
+        sentimentEnum === 'GOOD' ? 'positive' : sentimentEnum === 'BAD' ? 'negative' : 'neutral'
+      ].toFixed(4);
 
     const [newFeedback] = await db
       .insert(feedback)
