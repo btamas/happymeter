@@ -1,68 +1,11 @@
-import express from 'express';
 import * as dotenv from 'dotenv';
-import swaggerUi from 'swagger-ui-express';
-import feedbackRouter from './routes/feedback.js';
+import { app } from './app.js';
 import { warmupSentiment } from './services/sentiment.js';
 import { pool } from './db/index.js';
-import { swaggerSpec } from './swagger.js';
 
 dotenv.config();
 
-const app = express();
 const PORT = process.env.PORT || 4000;
-
-app.use(express.json());
-
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
-/**
- * @openapi
- * /api/health:
- *   get:
- *     tags:
- *       - Health
- *     summary: Health check
- *     description: Check API and database connection status
- *     responses:
- *       200:
- *         description: Service is healthy
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: ok
- *                 database:
- *                   type: string
- *                   example: connected
- *                 timestamp:
- *                   type: string
- *                   format: date-time
- *       503:
- *         description: Service unavailable
- */
-app.get('/api/health', async (_req, res) => {
-  try {
-    await pool.query('SELECT 1');
-    res.json({
-      status: 'ok',
-      database: 'connected',
-      timestamp: new Date().toISOString()
-    });
-  } catch (error) {
-    res.status(503).json({
-      status: 'error',
-      database: 'disconnected',
-      timestamp: new Date().toISOString()
-    });
-  }
-});
-
-app.use('/api', feedbackRouter);
-
-// Start server and warm up sentiment model
 app.listen(PORT, async () => {
   // eslint-disable-next-line no-console
   console.log(`Server running on http://localhost:${PORT}`);

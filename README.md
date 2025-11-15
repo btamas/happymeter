@@ -15,6 +15,7 @@ A customer feedback system with automated sentiment analysis, designed as a Proo
   - [Docker Production Setup](#docker-production-setup)
 - [API Documentation](#api-documentation)
 - [Admin Access](#admin-access)
+- [Testing](#testing)
 - [Project Structure](#project-structure)
 
 ## Overview
@@ -584,6 +585,9 @@ npm run build:backend        # Build backend only
 npm run build:frontend       # Build frontend only (outputs to frontend/dist/)
 npm run start:prod           # Start with Docker Compose (auto-builds frontend)
 npm run stop:prod            # Stop Docker Compose
+npm test                     # Run all backend tests
+npm run test:watch           # Run tests in watch mode
+npm run test:coverage        # Run tests with coverage report
 npm run lint                 # Lint both frontend and backend
 npm run lint:fix             # Auto-fix linting issues
 npm run format:check         # Check code formatting
@@ -605,6 +609,9 @@ cd backend
 npm run dev                  # Start dev server with hot reload
 npm run build                # Compile TypeScript to dist/
 npm run start                # Run compiled JavaScript
+npm test                     # Run all tests
+npm run test:watch           # Run tests in watch mode
+npm run test:coverage        # Run tests with coverage report
 npm run db:generate          # Generate migration files
 npm run db:migrate           # Run migrations
 npm run db:push              # Push schema changes
@@ -621,6 +628,80 @@ npm run dev                  # Start Vite dev server
 npm run build                # Build for production
 npm run preview              # Preview production build locally
 npm run lint                 # Lint frontend code
+```
+
+## Testing
+
+HappyMeter includes comprehensive automated tests for the backend API and sentiment analysis service.
+
+### Running Tests
+
+```bash
+# Run all tests
+npm test
+
+# Run tests in watch mode (re-runs on file changes)
+npm run test:watch
+
+# Run tests with coverage report
+npm run test:coverage
+```
+
+### Test Structure
+
+Tests are colocated with the source code they test:
+
+```
+backend/src/
+├── routes/
+│   ├── feedback.ts
+│   └── feedback.test.ts        # API endpoint tests (mocked sentiment)
+├── services/
+│   ├── sentiment.ts
+│   └── sentiment.test.ts       # Sentiment analysis integration tests
+```
+
+### Test Coverage
+
+**API Endpoint Tests** (`routes/feedback.test.ts`):
+- ✅ POST /api/feedback - Valid feedback submission
+- ✅ POST /api/feedback - Missing text validation
+- ✅ POST /api/feedback - Empty text validation
+- ✅ POST /api/feedback - Text length validation (>1000 chars)
+- ✅ POST /api/feedback - Type validation
+- ✅ POST /api/feedback - Exactly 1000 characters accepted
+- ✅ GET /api/feedback - Unauthorized access (401)
+- ✅ GET /api/feedback - Valid authentication
+- ✅ GET /api/feedback - Invalid credentials
+- ✅ GET /api/feedback - Pagination support
+- ✅ GET /api/feedback - Sentiment filtering
+- ✅ GET /api/health - Health check endpoint
+
+**Sentiment Analysis Tests** (`services/sentiment.test.ts`):
+- ✅ Positive text classification
+- ✅ Negative text classification
+- ✅ Neutral text classification
+- ✅ Probability score validation
+- ✅ Short text handling
+- ✅ Long text handling
+- ✅ Score range validation (-10 to +10)
+
+### Test Framework
+
+- **Test Runner**: Vitest
+- **HTTP Testing**: Supertest
+- **Mocking**: Sentiment service is mocked in API tests for speed
+- **Integration Tests**: Sentiment service tests use real ML model
+
+### Example Test Run
+
+```
+✓ src/services/sentiment.test.ts (7 tests) 343ms
+✓ src/routes/feedback.test.ts (12 tests) 80ms
+
+Test Files  2 passed (2)
+     Tests  19 passed (19)
+  Duration  683ms
 ```
 
 ## Sentiment Analysis Details
