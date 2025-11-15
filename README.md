@@ -632,15 +632,21 @@ npm run lint                 # Lint frontend code
 
 ## Testing
 
-HappyMeter includes comprehensive automated tests for the backend API and sentiment analysis service.
+HappyMeter includes comprehensive automated tests for **both frontend and backend**, with 62 total tests covering components, API endpoints, and business logic.
 
 ### Running Tests
 
 ```bash
-# Run all tests
+# Run all tests (backend + frontend)
 npm test
 
-# Run tests in watch mode (re-runs on file changes)
+# Run backend tests only
+npm run test:backend
+
+# Run frontend tests only
+npm run test:frontend
+
+# Run tests in watch mode (backend)
 npm run test:watch
 
 # Run tests with coverage report
@@ -655,15 +661,27 @@ Tests are colocated with the source code they test:
 backend/src/
 ├── routes/
 │   ├── feedback.ts
-│   └── feedback.test.ts        # API endpoint tests (mocked sentiment)
+│   └── feedback.test.ts        # API endpoint tests (11 tests)
 ├── services/
 │   ├── sentiment.ts
-│   └── sentiment.test.ts       # Sentiment analysis integration tests
+│   └── sentiment.test.ts       # Sentiment analysis tests (9 tests)
+│
+frontend/src/
+├── lib/
+│   ├── api.ts
+│   └── api.test.ts             # API utility tests (13 tests)
+├── pages/
+│   ├── FeedbackForm.tsx
+│   ├── FeedbackForm.test.tsx   # Form component tests (11 tests)
+│   ├── Admin.tsx
+│   └── Admin.test.tsx          # Admin dashboard tests (18 tests)
 ```
 
 ### Test Coverage
 
-**API Endpoint Tests** (`routes/feedback.test.ts`):
+#### Backend Tests (20 tests)
+
+**API Endpoint Tests** (`routes/feedback.test.ts` - 11 tests):
 - ✅ POST /api/feedback - Valid feedback submission
 - ✅ POST /api/feedback - Missing text validation
 - ✅ POST /api/feedback - Empty text validation
@@ -676,7 +694,7 @@ backend/src/
 - ✅ GET /api/feedback - Pagination support
 - ✅ GET /api/feedback - Sentiment filtering
 
-**Sentiment Analysis Tests** (`services/sentiment.test.ts`):
+**Sentiment Analysis Tests** (`services/sentiment.test.ts` - 9 tests):
 - ✅ Positive text classification
 - ✅ Negative text classification
 - ✅ Neutral text classification
@@ -687,25 +705,102 @@ backend/src/
 - ✅ Model warmup function
 - ✅ Analysis after warmup
 
+#### Frontend Tests (42 tests)
+
+**FeedbackForm Component Tests** (`pages/FeedbackForm.test.tsx` - 11 tests):
+- ✅ Renders form with all elements
+- ✅ Updates character count as user types
+- ✅ Disables submit button when textarea is empty
+- ✅ Enables submit button when textarea has text
+- ✅ Submits feedback and shows success message for GOOD sentiment
+- ✅ Submits feedback and shows success message for BAD sentiment
+- ✅ Submits feedback and shows success message for NEUTRAL sentiment
+- ✅ Shows error message when submission fails
+- ✅ Enforces 1000 character limit
+- ✅ Clears success message when submitting new feedback
+- ✅ Has link to admin dashboard
+
+**Admin Dashboard Tests** (`pages/Admin.test.tsx` - 18 tests):
+- ✅ Renders admin dashboard title and description
+- ✅ Shows loading state initially
+- ✅ Displays feedback data in table
+- ✅ Displays statistics correctly
+- ✅ Renders sentiment badges with correct colors
+- ✅ Displays confidence scores as percentages
+- ✅ Renders filter buttons
+- ✅ Filters by GOOD sentiment
+- ✅ Filters by BAD sentiment
+- ✅ Filters by NEUTRAL sentiment
+- ✅ Clears filter when All button clicked
+- ✅ Displays pagination information
+- ✅ Disables Previous button on first page
+- ✅ Disables Next button on last page
+- ✅ Navigates to next page
+- ✅ Navigates to previous page
+- ✅ Shows error message when fetch fails
+- ✅ Has link back to feedback form
+
+**API Utility Tests** (`lib/api.test.ts` - 13 tests):
+- ✅ Fetches feedback with no parameters
+- ✅ Fetches feedback with limit parameter
+- ✅ Fetches feedback with offset parameter
+- ✅ Fetches feedback with sentiment filter
+- ✅ Fetches feedback with all parameters
+- ✅ Throws error when fetch response not ok
+- ✅ Returns feedback data correctly
+- ✅ Submits feedback successfully
+- ✅ Throws error when submit response not ok
+- ✅ Throws generic error when no message in error response
+- ✅ Returns feedback with sentiment analysis
+- ✅ Sends correct content-type header
+- ✅ Uses POST method
+
 ### Test Framework
 
+**Backend:**
 - **Test Runner**: Vitest
 - **HTTP Testing**: Supertest
 - **Database**: PGlite (in-memory PostgreSQL via WASM) - no Docker required!
 - **Mocking**: Sentiment service is mocked in API tests for speed
 - **Integration Tests**: Sentiment service tests use real ML model
 
-**Key Feature**: Tests run completely independently without requiring a running PostgreSQL container. The test setup uses [@electric-sql/pglite](https://github.com/electric-sql/pglite) to provide an in-memory PostgreSQL database that behaves identically to production.
+**Frontend:**
+- **Test Runner**: Vitest
+- **Component Testing**: React Testing Library
+- **User Interaction**: @testing-library/user-event
+- **DOM Assertions**: @testing-library/jest-dom
+- **API Mocking**: Vitest mocks
+
+**Key Features**:
+- ✅ **No external dependencies** - Backend tests use PGlite (in-memory PostgreSQL), no Docker required
+- ✅ **Fast execution** - 62 tests run in ~4 seconds
+- ✅ **Comprehensive coverage** - Backend: 88.4%, Frontend: Full component & API coverage
+- ✅ **Colocated tests** - Tests live next to the code they test
+- ✅ **TypeScript** - Fully typed tests catch errors at compile time
 
 ### Example Test Run
 
-```
-✓ src/routes/feedback.test.ts (11 tests) 45ms
-✓ src/services/sentiment.test.ts (9 tests) 229ms
+```bash
+$ npm test
+
+# Backend Tests
+✓ src/routes/feedback.test.ts (11 tests) 46ms
+✓ src/services/sentiment.test.ts (9 tests) 224ms
 
 Test Files  2 passed (2)
      Tests  20 passed (20)
-  Duration  965ms
+  Duration  963ms
+
+# Frontend Tests
+✓ src/lib/api.test.ts (13 tests) 5ms
+✓ src/pages/Admin.test.tsx (18 tests) 389ms
+✓ src/pages/FeedbackForm.test.tsx (11 tests) 2875ms
+
+Test Files  3 passed (3)
+     Tests  42 passed (42)
+  Duration  3.96s
+
+Total: 62 tests passed across 5 test files
 ```
 
 **Note**: First test run downloads the sentiment analysis model (~500MB), which takes longer. Subsequent runs are fast.
