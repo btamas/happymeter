@@ -30,7 +30,7 @@
   "devDependencies": {
     "@electric-sql/pglite": "^0.3.14",
     "@types/express": "^5.0.0",
-    "@types/node": "^22.9.3",
+    "@types/node": "^24.10.1",
     "@types/pg": "^8.15.6",
     "@types/supertest": "^6.0.3",
     "@types/swagger-jsdoc": "^6.0.4",
