@@ -30,6 +30,8 @@ services:
       - NODE_ENV=production
       - PORT=4000
       - DATABASE_URL=postgresql://happymeter:happymeter@db:5432/happymeter
+      - ADMIN_USERNAME=${ADMIN_USERNAME:-admin}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin123}
     expose:
       - '4000'
     depends_on:

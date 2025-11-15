@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { fetchFeedback, submitFeedback } from './api';
 
-global.fetch = vi.fn();
+globalThis.fetch = vi.fn();
 
 describe('API functions', () => {
   beforeEach(() => {

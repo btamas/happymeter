@@ -1,11 +1,25 @@
 import { Router, Request, Response } from 'express';
 import basicAuth from 'express-basic-auth';
+import { rateLimit } from 'express-rate-limit';
 import { db } from '../db/index.js';
 import { feedback } from '../db/schema.js';
 import { analyzeSentiment } from '../services/sentiment.js';
 import { desc, eq, sql } from 'drizzle-orm';
 
 const router = Router();
+
+// Rate limiter for feedback submission endpoint
+const feedbackLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 5, // 5 requests per IP per minute
+  message: {
+    error: 'Too Many Requests',
+    message: 'Too many feedback submissions, please try again later.'
+  },
+  standardHeaders: true, // Return rate limit info in `RateLimit-*` headers
+  legacyHeaders: false,
+  skip: () => process.env.NODE_ENV === 'test' // Disable rate limiting in test environment
+});
 
 // Basic auth middleware for admin endpoints
 const adminAuth = basicAuth({
@@ -71,7 +85,7 @@ const adminAuth = basicAuth({
  *       500:
  *         description: Internal server error
  */
-router.post('/feedback', async (req: Request, res: Response) => {
+router.post('/feedback', feedbackLimiter, async (req: Request, res: Response) => {
   try {
     const { text } = req.body;
 
