@@ -130,7 +130,7 @@ jobs:
           echo "✅ Backend build artifacts verified"
 
       - name: Upload backend build artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: backend-dist
           path: backend/dist/
@@ -165,7 +165,7 @@ jobs:
           echo "✅ Frontend build artifacts verified"
 
       - name: Upload frontend build artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: frontend-dist
           path: frontend/dist/
