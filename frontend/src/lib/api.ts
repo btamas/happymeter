@@ -1,4 +1,10 @@
-import type { FeedbackResponse, SubmitFeedbackRequest, SubmitFeedbackResponse, Sentiment } from './types';
+import type {
+  FeedbackResponse,
+  FeedbackStats,
+  SubmitFeedbackRequest,
+  SubmitFeedbackResponse,
+  Sentiment
+} from './types';
 
 const API_BASE = '/api';
 
@@ -14,6 +20,12 @@ export async function fetchFeedback(params: {
 
   const response = await fetch(`${API_BASE}/feedback?${searchParams}`);
   if (!response.ok) throw new Error('Failed to fetch feedback');
+  return response.json();
+}
+
+export async function fetchFeedbackStats(): Promise<FeedbackStats> {
+  const response = await fetch(`${API_BASE}/feedback/stats`);
+  if (!response.ok) throw new Error('Failed to fetch feedback statistics');
   return response.json();
 }
 

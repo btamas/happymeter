@@ -27,3 +27,10 @@ export interface SubmitFeedbackResponse {
   confidenceScore: string;
   createdAt: string;
 }
+
+export interface FeedbackStats {
+  total: number;
+  good: number;
+  bad: number;
+  neutral: number;
+}

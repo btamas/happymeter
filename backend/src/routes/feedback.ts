@@ -263,4 +263,65 @@ router.get('/feedback', adminAuth, async (req: Request, res: Response) => {
   }
 });
 
+/**
+ * @openapi
+ * /api/feedback/stats:
+ *   get:
+ *     tags:
+ *       - Feedback
+ *     summary: Get feedback statistics (Admin only)
+ *     description: Get aggregated statistics for all feedback including total counts by sentiment. Requires HTTP Basic Authentication.
+ *     security:
+ *       - basicAuth: []
+ *     responses:
+ *       200:
+ *         description: Feedback statistics
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 total:
+ *                   type: integer
+ *                   example: 150
+ *                 good:
+ *                   type: integer
+ *                   example: 80
+ *                 bad:
+ *                   type: integer
+ *                   example: 35
+ *                 neutral:
+ *                   type: integer
+ *                   example: 35
+ *       401:
+ *         description: Unauthorized - Authentication required
+ *       500:
+ *         description: Internal server error
+ */
+router.get('/feedback/stats', adminAuth, async (_req: Request, res: Response) => {
+  try {
+    const [stats] = await db
+      .select({
+        total: sql<number>`count(*)::int`,
+        good: sql<number>`count(case when sentiment = 'GOOD' then 1 end)::int`,
+        bad: sql<number>`count(case when sentiment = 'BAD' then 1 end)::int`,
+        neutral: sql<number>`count(case when sentiment = 'NEUTRAL' then 1 end)::int`
+      })
+      .from(feedback);
+
+    res.json({
+      total: stats.total || 0,
+      good: stats.good || 0,
+      bad: stats.bad || 0,
+      neutral: stats.neutral || 0
+    });
+  } catch (error) {
+    console.error('Stats retrieval error:', error);
+    res.status(500).json({
+      error: 'Internal Server Error',
+      message: 'Failed to retrieve statistics'
+    });
+  }
+});
+
 export default router;

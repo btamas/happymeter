@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useReactTable, getCoreRowModel, flexRender, createColumnHelper } from '@tanstack/react-table';
-import { fetchFeedback } from '../lib/api';
+import { fetchFeedback, fetchFeedbackStats } from '../lib/api';
 import type { Feedback, Sentiment } from '../lib/types';
 
 const columnHelper = createColumnHelper<Feedback>();
@@ -57,6 +57,11 @@ export default function Admin() {
       })
   });
 
+  const { data: stats } = useQuery({
+    queryKey: ['feedbackStats'],
+    queryFn: fetchFeedbackStats
+  });
+
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data: data?.feedback ?? [],
@@ -79,29 +84,23 @@ export default function Admin() {
           </a>
         </div>
 
-        {data && (
+        {stats && (
           <div className="bg-white rounded-lg shadow-md p-6 mb-6">
             <div className="grid grid-cols-4 gap-4 text-center">
               <div>
-                <p className="text-3xl font-bold text-gray-900">{data.total}</p>
+                <p className="text-3xl font-bold text-gray-900">{stats.total}</p>
                 <p className="text-sm text-gray-600">Total Feedback</p>
               </div>
               <div>
-                <p className="text-3xl font-bold text-green-600">
-                  {data.feedback.filter(f => f.sentiment === 'GOOD').length}
-                </p>
+                <p className="text-3xl font-bold text-green-600">{stats.good}</p>
                 <p className="text-sm text-gray-600">Good</p>
               </div>
               <div>
-                <p className="text-3xl font-bold text-red-600">
-                  {data.feedback.filter(f => f.sentiment === 'BAD').length}
-                </p>
+                <p className="text-3xl font-bold text-red-600">{stats.bad}</p>
                 <p className="text-sm text-gray-600">Bad</p>
               </div>
               <div>
-                <p className="text-3xl font-bold text-yellow-600">
-                  {data.feedback.filter(f => f.sentiment === 'NEUTRAL').length}
-                </p>
+                <p className="text-3xl font-bold text-yellow-600">{stats.neutral}</p>
                 <p className="text-sm text-gray-600">Neutral</p>
               </div>
             </div>
