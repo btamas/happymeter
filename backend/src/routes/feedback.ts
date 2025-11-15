@@ -8,6 +8,8 @@ import { desc, eq, sql } from 'drizzle-orm';
 
 const router = Router();
 
+const MAX_FEEDBACK_LIMIT = 100;
+
 // Rate limiter for feedback submission endpoint
 const feedbackLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
@@ -226,7 +228,7 @@ router.post('/feedback', feedbackLimiter, async (req: Request, res: Response) =>
  */
 router.get('/feedback', adminAuth, async (req: Request, res: Response) => {
   try {
-    const limit = Math.max(1, Math.min(100, parseInt(req.query.limit as string) || 20));
+    const limit = Math.max(1, Math.min(MAX_FEEDBACK_LIMIT, parseInt(req.query.limit as string) || 20));
     const offset = Math.max(0, parseInt(req.query.offset as string) || 0);
     const sentimentFilter = req.query.sentiment as string | undefined;
 
