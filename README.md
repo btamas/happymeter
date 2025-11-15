@@ -1,5 +1,8 @@
 # HappyMeter
 
+![CI](https://github.com/btamas/happymeter/actions/workflows/ci.yml/badge.svg)
+![CodeQL](https://github.com/btamas/happymeter/actions/workflows/codeql.yml/badge.svg)
+
 A customer feedback system with automated sentiment analysis, designed as a Proof of Concept for e-commerce businesses to gather and analyze customer opinions about their products.
 
 ## Table of Contents

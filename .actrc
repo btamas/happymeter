@@ -1,0 +1,11 @@
+# Act configuration for local GitHub Actions testing
+# https://github.com/nektos/act
+
+# Use medium-sized runner for better compatibility
+-P ubuntu-latest=catthehacker/ubuntu:act-latest
+
+# Container architecture for M-series Mac
+--container-architecture linux/amd64
+
+# Bind Docker socket
+--use-gitignore=false

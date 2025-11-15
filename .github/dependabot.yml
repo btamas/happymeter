@@ -1,0 +1,72 @@
+version: 2
+updates:
+  # Enable version updates for npm dependencies
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '06:00'
+    open-pull-requests-limit: 10
+    reviewers:
+      - 'btamas'
+    labels:
+      - 'dependencies'
+      - 'automated'
+    commit-message:
+      prefix: 'chore(deps)'
+      include: 'scope'
+
+  # Backend workspace
+  - package-ecosystem: 'npm'
+    directory: '/backend'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '06:00'
+    open-pull-requests-limit: 5
+    reviewers:
+      - 'btamas'
+    labels:
+      - 'dependencies'
+      - 'backend'
+      - 'automated'
+    commit-message:
+      prefix: 'chore(deps)'
+      include: 'scope'
+
+  # Frontend workspace
+  - package-ecosystem: 'npm'
+    directory: '/frontend'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '06:00'
+    open-pull-requests-limit: 5
+    reviewers:
+      - 'btamas'
+    labels:
+      - 'dependencies'
+      - 'frontend'
+      - 'automated'
+    commit-message:
+      prefix: 'chore(deps)'
+      include: 'scope'
+
+  # GitHub Actions
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '06:00'
+    open-pull-requests-limit: 5
+    reviewers:
+      - 'btamas'
+    labels:
+      - 'dependencies'
+      - 'github-actions'
+      - 'automated'
+    commit-message:
+      prefix: 'chore(deps)'
+      include: 'scope'
