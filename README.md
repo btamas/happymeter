@@ -49,6 +49,11 @@ HappyMeter enables businesses to:
 - Type-safe TypeScript implementation
 - Docker containerization with nginx reverse proxy
 - Health check endpoints
+- Rate limiting (5 requests per minute per IP)
+- Request body size limits (100KB max)
+- Database connection pooling
+- Automatic timestamp updates via database triggers
+- Performance-optimized database indexes
 
 ## Tech Stack
 
@@ -149,8 +154,14 @@ CREATE TABLE feedback (
 ### Indexes
 
 - Primary key index on `id`
-- Recommended: Add index on `sentiment` for faster filtering (future optimization)
-- Recommended: Add index on `created_at` for faster sorting (future optimization)
+- Index on `sentiment` for faster filtering (`idx_feedback_sentiment`)
+- Index on `created_at` for faster sorting (`idx_feedback_created_at`)
+- Composite index on `sentiment` and `created_at` for optimized filtered queries (`idx_feedback_sentiment_created_at`)
+
+### Database Triggers
+
+- Automatic `updated_at` timestamp update on row modifications
+- PostgreSQL trigger function `update_updated_at_column()` maintains data consistency
 
 ## Getting Started
 
@@ -196,6 +207,12 @@ PORT=4000
 # Database Configuration
 DATABASE_URL=postgresql://happymeter:happymeter@localhost:5432/happymeter
 
+# Database Connection Pool (optional - defaults shown)
+DB_POOL_MAX=20                 # Maximum pool connections
+DB_POOL_MIN=2                  # Minimum pool connections
+DB_IDLE_TIMEOUT=30000          # Idle connection timeout (ms)
+DB_CONNECTION_TIMEOUT=5000     # Connection timeout (ms)
+
 # Admin Authentication
 ADMIN_USERNAME=admin
 ADMIN_PASSWORD=admin123
@@ -229,7 +246,10 @@ npm run db:migrate
 cd ..
 ```
 
-This creates the `feedback` table and `sentiment_type` enum.
+This creates:
+- The `feedback` table and `sentiment_type` enum
+- Automatic `updated_at` trigger for timestamp updates
+- Performance indexes on `sentiment`, `created_at`, and composite queries
 
 #### 6. Start Development Servers
 
@@ -372,8 +392,13 @@ Submit customer feedback for sentiment analysis.
 - `text` must not be empty
 - `text` must be max 1000 characters
 
+**Rate Limiting:**
+- Maximum 5 requests per minute per IP address
+- Returns `429 Too Many Requests` when limit exceeded
+
 **Error Responses:**
 - `400 Bad Request`: Invalid input (missing text, too long, etc.)
+- `429 Too Many Requests`: Rate limit exceeded
 - `500 Internal Server Error`: Server error during processing
 
 #### GET /api/feedback
@@ -454,11 +479,18 @@ The admin dashboard is protected with HTTP Basic Authentication.
    ADMIN_PASSWORD=your_secure_password
    ```
 
-2. **Docker Production**: Edit `docker-compose.yml`
+2. **Docker Production**: Set environment variables before starting
+   ```bash
+   export ADMIN_USERNAME=your_username
+   export ADMIN_PASSWORD=your_secure_password
+   docker-compose up
+   ```
+
+   Or edit `docker-compose.yml` to set different defaults:
    ```yaml
    environment:
-     - ADMIN_USERNAME=your_username
-     - ADMIN_PASSWORD=your_secure_password
+     - ADMIN_USERNAME=${ADMIN_USERNAME:-your_username}
+     - ADMIN_PASSWORD=${ADMIN_PASSWORD:-your_secure_password}
    ```
 
 3. Restart the application for changes to take effect.
@@ -804,6 +836,65 @@ Total: 62 tests passed across 5 test files
 ```
 
 **Note**: First test run downloads the sentiment analysis model (~500MB), which takes longer. Subsequent runs are fast.
+
+## Security & Performance
+
+### Security Features
+
+**Rate Limiting:**
+- Feedback submission endpoint limited to 5 requests per minute per IP
+- Prevents spam and abuse
+- Disabled automatically in test environment
+- Returns `429 Too Many Requests` with clear error message
+
+**Request Body Size Limits:**
+- Global limit of 100KB for all JSON requests
+- Prevents large payload attacks
+- Configured via Express middleware
+
+**Authentication:**
+- HTTP Basic Authentication for admin endpoints
+- Configurable credentials via environment variables
+- Browser native authentication dialog
+
+### Performance Optimizations
+
+**Database Connection Pooling:**
+- Minimum 2 connections maintained
+- Maximum 20 connections (configurable)
+- 30-second idle timeout
+- Connection keep-alive enabled
+- Prevents connection exhaustion
+
+**Database Indexes:**
+- `idx_feedback_sentiment`: Speeds up sentiment filtering
+- `idx_feedback_created_at`: Optimizes time-based sorting
+- `idx_feedback_sentiment_created_at`: Composite index for filtered + sorted queries
+- Significantly improves admin dashboard query performance
+
+**Automatic Triggers:**
+- PostgreSQL trigger automatically updates `updated_at` on row modifications
+- Ensures data consistency without application logic
+- Zero performance overhead for reads
+
+### Configuration
+
+All security and performance features are configurable via environment variables:
+
+```env
+# Rate limiting (applied per IP address)
+# Note: Rate limit is hardcoded to 5 requests per minute in code
+
+# Database connection pool
+DB_POOL_MAX=20                 # Maximum connections
+DB_POOL_MIN=2                  # Minimum connections
+DB_IDLE_TIMEOUT=30000          # Idle timeout (30 seconds)
+DB_CONNECTION_TIMEOUT=5000     # Connection timeout (5 seconds)
+
+# Admin credentials
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=admin123
+```
 
 ## Sentiment Analysis Details
 
