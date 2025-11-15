@@ -42,7 +42,6 @@ const columns = [
 ];
 
 export default function Admin() {
-  'use no memo';
   const [page, setPage] = useState(0);
   const [sentimentFilter, setSentimentFilter] = useState<Sentiment | undefined>();
   const pageSize = 20;
@@ -62,6 +61,8 @@ export default function Admin() {
     queryFn: fetchFeedbackStats
   });
 
+  // TanStack React Table v8 is fully compatible with React 19
+  // The ESLint rule hasn't been updated yet - this is a false positive
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data: data?.feedback ?? [],

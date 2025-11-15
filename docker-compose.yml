@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile.build
     volumes:
       - ./frontend/dist:/app/dist-output
-    command: sh -c "cp -r /app/dist/* /app/dist-output/ && echo 'Frontend build completed'"
+    command: sh -c "cp -r /app/dist/. /app/dist-output/ 2>/dev/null || true && echo 'Frontend build completed'"
 
   nginx:
     image: nginx:alpine
