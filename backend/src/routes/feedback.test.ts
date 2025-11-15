@@ -144,4 +144,64 @@ describe('API Endpoints', () => {
       );
     });
   });
+
+  describe('GET /api/feedback/stats', () => {
+    beforeAll(async () => {
+      // Create some test feedback with different sentiments
+      await request(app).post('/api/feedback').send({ text: 'This is amazing and great!' });
+      await request(app).post('/api/feedback').send({ text: 'This is terrible and awful!' });
+      await request(app).post('/api/feedback').send({ text: 'This is okay, nothing special.' });
+    });
+
+    it('should return 401 without authentication', async () => {
+      const response = await request(app).get('/api/feedback/stats').expect('Content-Type', /json/).expect(401);
+
+      expect(response.body).toHaveProperty('error', 'Unauthorized');
+    });
+
+    it('should return 401 with invalid credentials', async () => {
+      const response = await request(app).get('/api/feedback/stats').auth('wrong', 'credentials').expect(401);
+
+      expect(response.body).toHaveProperty('error', 'Unauthorized');
+    });
+
+    it('should return aggregated statistics with valid authentication', async () => {
+      const response = await request(app)
+        .get('/api/feedback/stats')
+        .auth(process.env.ADMIN_USERNAME || 'admin', process.env.ADMIN_PASSWORD || 'admin123')
+        .expect('Content-Type', /json/)
+        .expect(200);
+
+      expect(response.body).toHaveProperty('total');
+      expect(response.body).toHaveProperty('good');
+      expect(response.body).toHaveProperty('bad');
+      expect(response.body).toHaveProperty('neutral');
+
+      expect(typeof response.body.total).toBe('number');
+      expect(typeof response.body.good).toBe('number');
+      expect(typeof response.body.bad).toBe('number');
+      expect(typeof response.body.neutral).toBe('number');
+
+      // Verify that total equals the sum of all sentiments
+      expect(response.body.total).toBe(response.body.good + response.body.bad + response.body.neutral);
+
+      // Verify counts are non-negative
+      expect(response.body.total).toBeGreaterThanOrEqual(0);
+      expect(response.body.good).toBeGreaterThanOrEqual(0);
+      expect(response.body.bad).toBeGreaterThanOrEqual(0);
+      expect(response.body.neutral).toBeGreaterThanOrEqual(0);
+    });
+
+    it('should return accurate counts for each sentiment', async () => {
+      const response = await request(app)
+        .get('/api/feedback/stats')
+        .auth(process.env.ADMIN_USERNAME || 'admin', process.env.ADMIN_PASSWORD || 'admin123')
+        .expect(200);
+
+      // Based on our test data, we should have at least 1 of each sentiment
+      expect(response.body.good).toBeGreaterThan(0);
+      expect(response.body.bad).toBeGreaterThan(0);
+      expect(response.body.neutral).toBeGreaterThan(0);
+    });
+  });
 });
