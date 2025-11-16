@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import basicAuth from 'express-basic-auth';
-import { rateLimit } from 'express-rate-limit';
+import { rateLimit, ipKeyGenerator } from 'express-rate-limit';
 import { db } from '../db/index.js';
 import { feedback } from '../db/schema.js';
 import { analyzeSentiment } from '../services/sentiment.js';
@@ -20,7 +20,14 @@ const feedbackLimiter = rateLimit({
   },
   standardHeaders: true, // Return rate limit info in `RateLimit-*` headers
   legacyHeaders: false,
-  skip: () => process.env.NODE_ENV === 'test' // Disable rate limiting in test environment
+  skip: () => process.env.NODE_ENV === 'test', // Disable rate limiting in test environment
+  keyGenerator: (req: Request) => {
+    const xff = (req.headers['x-forwarded-for'] as string) || '';
+    const ip = xff.split(',')[0]?.trim() || req.ip || 'unknown';
+    const normalizedIp = ipKeyGenerator(ip);
+    const ua = req.get('user-agent') || '';
+    return `${normalizedIp}:${ua}`;
+  }
 });
 
 // Basic auth middleware for admin endpoints
